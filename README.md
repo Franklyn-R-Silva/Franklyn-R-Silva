@@ -1,4 +1,4 @@
-# <img align="center" src="https://raw.githubusercontent.com/DevFullStack-Franklyn-R-Silva/KlynMobDev/master/welcome.gif" width="80px"> Olá! Eu sou Franklyn Roberto, um desenvolvedor full stack apaixonado pelo que faço!   
+# <img align="center" src="https://raw.githubusercontent.com/KlynMobDev/KlynMobDev/master/welcome.gif" width="80px"> Olá! Eu sou Franklyn Roberto, um desenvolvedor full stack apaixonado pelo que faço!   
           
 <!-- GIF de Boas-vindas -->    
 <p align="center">    
