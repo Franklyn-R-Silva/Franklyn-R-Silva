@@ -35,7 +35,7 @@
     <a href="https://www.leagueofgraphs.com/pt/summoner/br/Ceifador+Sombrio-Abyss" target="_blank">
       <img src="https://img.shields.io/badge/Riot_Games-D32936?style=for-the-badge&logo=riot-games&logoColor=white" title="League of Legends"/>
     </a>
-    <a href="https://github.com/hadesfranklyn?tab=repositories&sort=stargazers" target="_blank">
+    <a href="https://github.com/KlynMobDev?tab=repositories&sort=stargazers" target="_blank">
       <img alt="Total Stars" title="Total stars on GitHub" src="https://custom-icon-badges.demolab.com/github/stars/KlynMobDev?color=B8B92B&style=for-the-badge&labelColor=959532&logo=star"/>
     </a>
     <a href="https://github.com/KlynMobDev" target="_blank">
