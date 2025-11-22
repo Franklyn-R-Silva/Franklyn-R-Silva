@@ -1,4 +1,4 @@
-# <img align="center" src="https://raw.githubusercontent.com/KlynMobDev/KlynMobDev/master/welcome.gif" width="80px"> Olá! Eu sou Franklyn Roberto, um desenvolvedor full stack apaixonado pelo que faço!   
+# <img align="center" src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/welcome.gif" width="80px"> Olá! Eu sou Franklyn Roberto, um desenvolvedor full stack apaixonado pelo que faço!   
           
 <!-- GIF de Boas-vindas -->    
 <p align="center">    
@@ -35,16 +35,16 @@
     <a href="https://www.leagueofgraphs.com/pt/summoner/br/Ceifador+Sombrio-Abyss" target="_blank">
       <img src="https://img.shields.io/badge/Riot_Games-D32936?style=for-the-badge&logo=riot-games&logoColor=white" title="League of Legends"/>
     </a>
-    <a href="https://github.com/KlynMobDev?tab=repositories&sort=stargazers" target="_blank">
-      <img alt="Total Stars" title="Total stars on GitHub" src="https://custom-icon-badges.demolab.com/github/stars/KlynMobDev?color=B8B92B&style=for-the-badge&labelColor=959532&logo=star"/>
+    <a href="https://github.com/Franklyn-R-Silva?tab=repositories&sort=stargazers" target="_blank">
+      <img alt="Total Stars" title="Total stars on GitHub" src="https://custom-icon-badges.demolab.com/github/stars/Franklyn-R-Silva?color=B8B92B&style=for-the-badge&labelColor=959532&logo=star"/>
     </a>
-    <a href="https://github.com/KlynMobDev" target="_blank">
-      <img alt="Followers" title="Follow me on GitHub" src="https://img.shields.io/github/followers/KlynMobDev?color=236ad3&style=for-the-badge&logo=github&label=Follow"/>
+    <a href="https://github.com/Franklyn-R-Silva" target="_blank">
+      <img alt="Followers" title="Follow me on GitHub" src="https://img.shields.io/github/followers/Franklyn-R-Silva?color=236ad3&style=for-the-badge&logo=github&label=Follow"/>
     </a>
   </div>
 </h4>
 <div align="center">
-  <img src="https://counter.kuber.studio/KlynMobDev/hacker/count.svg" alt="Profile views" />
+  <img src="https://counter.kuber.studio/Franklyn-R-Silva/hacker/count.svg" alt="Profile views" />
 </div>
   
 ---
@@ -75,7 +75,7 @@
 </div>
 
 <p align="left">
-  <a href="https://github.com/KlynMobDev">
+  <a href="https://github.com/Franklyn-R-Silva">
     <img src="https://go-skill-icons.vercel.app/api/icons?i=vscode,eclipse,spring,androidstudio,postman,github,git,mongodb,mysql,ts,js,html,css,tailwindcss,express,nextjs,electron,bootstrap,react,nodejs,java,docker,postgresql,dart,flutter,jest,oracle,supabase" alt="Skill Icons"/>
   </a>
 </p>
@@ -84,11 +84,11 @@
 
 ## 📽️ Projetos Relevantes
 
-- **[Projeto Gerador de QR Code](https://github.com/KlynMobDev/Gerador-de-QRCode-com-ReactJS)**  
+- **[Projeto Gerador de QR Code](https://github.com/Franklyn-R-Silva/Gerador-de-QRCode-com-ReactJS)**  
   *Gera QR Code a partir de texto ou URL, permitindo salvar o código como PNG.*  
   *(React.js, HTML, CSS, JS)*
 
-- **[Projeto Gerador de Sombra de Caixa (box-shadow)](https://github.com/KlynMobDev/Gerador-de-box-shadow-com-JavaScript)**  
+- **[Projeto Gerador de Sombra de Caixa (box-shadow)](https://github.com/Franklyn-R-Silva/Gerador-de-box-shadow-com-JavaScript)**  
   *Utilitário para criação visual de box-shadow com auxílio gráfico.*  
   *(HTML, CSS, JS)*
 
@@ -191,7 +191,7 @@
       <img alt="Linguagens utilizadas" width="40%" src="https://github-readme-stats.vercel.app/api/wakatime?username=hadesfranklyn&theme=radical&layout=compact"/>
     </a>
     <!-- Estatísticas do GitHub -->
-    <img height="200px" src="https://github-readme-stats.vercel.app/api?username=KlynMobDev&hide_border=true&show_icons=true&count_private=true&theme=tokyonight&bg_color=151515" alt="GitHub Stats"/>
+    <img height="200px" src="https://github-readme-stats.vercel.app/api?username=Franklyn-R-Silva&hide_border=true&show_icons=true&count_private=true&theme=tokyonight&bg_color=151515" alt="GitHub Stats"/>
   </div>
 </p>
 
@@ -201,7 +201,7 @@
 
 <div align="center">
   <a href="https://github.com/hadesfranklyn/github-profile-trophy" target="_blank">
-    <img src="https://github-profile-trophy.vercel.app/?username=KlynMobDev&theme=tokyonight&row=1&no-frame=true" alt="Troféus"/>
+    <img src="https://github-profile-trophy.vercel.app/?username=Franklyn-R-Silva&theme=tokyonight&row=1&no-frame=true" alt="Troféus"/>
   </a>
 </div>
 
