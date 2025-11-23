@@ -44,9 +44,6 @@
   </div>
 </h4>
 <div align="center">
-  <img src="https://counter.kuber.studio/Franklyn-R-Silva/hacker/count.svg" alt="Profile views" />
-</div>
-<div align="center">
           
 <h2><img align="center" src="https://raw.githubusercontent.com/hadesfranklyn/hadesfranklyn/master/manopla.gif" width="35px" height="35"/> Sobre Mim</h2>
   </div>
