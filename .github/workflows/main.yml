@@ -23,7 +23,7 @@ jobs:
       - uses: Platane/snk@v2
         id: hadesfranklyn-Snake
         with:
-          github_user_name: hadesfranklyn
+          github_user_name: Franklyn-R-Silva # <-- CORRIGIDO
           outputs: |
                      dist/github-contribution-grid-snake2.svg?palette=github-dark
 
