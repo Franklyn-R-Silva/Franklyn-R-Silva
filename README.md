@@ -1,4 +1,4 @@
-# <img align="center" src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/welcome.gif" width="80px"> Olá! Eu sou Franklyn Roberto, um desenvolvedor full stack apaixonado pelo que faço!   
+<div align="center"> <h1 style="margin-top: 0;">Franklyn Roberto</h1> <p style="font-size: 18px; font-weight: bold; margin-top: -10px;"> Mobile Developer 📱 | Flutter, Kotlin & Swift </p> </div>
           
 <!-- GIF de Boas-vindas -->    
 <p align="center">    
@@ -44,6 +44,9 @@
   </div>
 </h4>
 <div align="center">
+  <img src="https://counter.kuber.studio/Franklyn-R-Silva/hacker/count.svg" alt="Profile views" />
+</div>
+<div align="center">
           
 <h2><img align="center" src="https://raw.githubusercontent.com/hadesfranklyn/hadesfranklyn/master/manopla.gif" width="35px" height="35"/> Sobre Mim</h2>
   </div>
@@ -65,7 +68,7 @@
 
 <div align="center">
   <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-    <h2>Arsenal Tecnológico</h2>
+    <h2><img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/welcome.gif" width="50" alt="Welcome GIF" style="margin-bottom: 10px;"> Arsenal Tecnológico</h2>
   </div>
   
   <br>
