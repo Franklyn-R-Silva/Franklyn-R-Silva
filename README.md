@@ -1,5 +1,15 @@
-<div align="center"> <h1 style="margin-top: 0;">Franklyn Roberto</h1> <p style="font-size: 18px; font-weight: bold; margin-top: -10px;"> Mobile Developer 📱 | Flutter, Kotlin & Swift </p> </div>
-          
+<div align="center">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+    <div style="text-align: left;">
+      <h1 style="margin: 0; line-height: 1;"> <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/sapo_hackerman.gif" width="25" alt="Hacker Frog GIF"> Franklyn Roberto <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/sapo_hackerman.gif" width="25" alt="Hacker Frog GIF"></h1>
+      <p style="font-size: 18px; font-weight: bold; margin: 5px 0 0 0;">
+        Mobile Developer 📱<br>
+        <span style="font-size: 14px; font-weight: normal; color: #888;">Flutter, Kotlin & Swift Specialist</span>
+      </p>
+    </div>
+    
+  </div>
+</div>       
 <!-- GIF de Boas-vindas -->    
 <p align="center">    
   <img src="https://user-images.githubusercontent.com/70382532/138322189-2db8df52-9dcb-40a0-88a8-c365466bd33d.gif" width="600" alt="GIF de boas-vindas"/>
