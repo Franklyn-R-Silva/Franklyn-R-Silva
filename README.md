@@ -17,7 +17,7 @@
    
 <!-- Efeito de texto dinâmico -->    
 <h4 align="center">
-<img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=420&height=45&lines=Bem-vindo!;Codificando+com+propósito;Inovando+linha+por+linha;Sempre+aprendendo!&center=true" alt="Typing Effect"/>
+<img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=420&height=45&lines=Desenvolvedor+Mobile+%7C+Android+%26+iOS;Especialista+em+Flutter+%26+Dart;Codificando+com+propósito+mobile;Sempre+buscando+o+código+limpo!&center=true" alt="Typing Effect"/>
   <br>
   <!-- Bloco de Redes Sociais --> 
   <div>
