@@ -141,8 +141,4 @@
   <img src="https://counter.kuber.studio/Franklyn-R-Silva/hacker/count.svg" alt="Views"/>
 </div>
 
-<div align="center">
-  <h2>🐍 Minhas Contribuições</h2>
-  <p>Consistência e atividade no GitHub</p>
-  <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/dist/github-contribution-grid-snake2.svg" alt="Snake Game Animation" width="95%"/>
-</div>
+![github contribution grid snake animation](https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake.svg)
