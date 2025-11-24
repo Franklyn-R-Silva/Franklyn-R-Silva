@@ -1,15 +1,6 @@
 <div align="center">
-  <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
     <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/sapo_hackerman.gif" width="80" alt="Hacker Frog GIF">
-    <div style="text-align: left;">
-      <h1 style="margin: 0; line-height: 1;">Franklyn Roberto</h1>
-      <p style="font-size: 18px; font-weight: bold; margin: 5px 0 0 0;">
-        Mobile Developer 📱<br>
-        <span style="font-size: 14px; font-weight: normal; color: #888;">Flutter, Kotlin & Swift Specialist</span>
-      </p>
-    </div>
-    
-  </div>
+      <h1>Franklyn Roberto</h1>
 </div>   
 <!-- GIF de Boas-vindas -->    
 
