@@ -38,17 +38,19 @@
       <img alt="Followers" title="Follow me on GitHub" src="https://img.shields.io/github/followers/Franklyn-R-Silva?color=236ad3&style=for-the-badge&logo=github&label=Follow"/>
     </a>
   </div>
-  <img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=420&height=45&lines=Desenvolvedor+Mobile+%7C+Android+%26+iOS;Especialista+em+Flutter+%26+Dart;Codificando+com+propósito+mobile;Sempre+buscando+o+código+limpo!&center=true" alt="Typing Effect"/>
+<img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=450&height=45&lines=Mobile+Developer+|+Android+%26+iOS;Flutter+%26+Dart+Specialist;Building+Mobile+Apps+with+Purpose;Always+Striving+for+Clean+Code!&center=true" alt="Typing Effect"/>
 </div>
 
 <div align="center">
           
-<h2><img align="center" src="https://raw.githubusercontent.com/hadesfranklyn/hadesfranklyn/master/manopla.gif" width="35px" height="35"/> Sobre Mim</h2>
+<h2><img align="center" src="https://raw.githubusercontent.com/hadesfranklyn/hadesfranklyn/master/manopla.gif" width="35px" height="35"/> About Me</h2>
   </div>
-<p align="center" style="max-width: 600px;">
-    Sou <b>Cientista da Computação (UFAL)</b> focado obsessivamente em <b>Desenvolvimento Mobile</b>. <br>
-    Meu objetivo é dominar o ecossistema móvel, criando apps nativos e híbridos que impactam a vida das pessoas. Atualmente, estou aprofundando meus conhecimentos em arquiteturas escaláveis e UX mobile.
-  </p>
+<p align="center">
+  👋 I'm a <b>Computer Scientist (UFAL)</b> obsessively focused on <b>Mobile Development</b> 📱
+  <br>
+  🚀 My goal is to master the mobile ecosystem, building native and cross-platform apps that truly impact people's lives.<br>
+  ⚡ Currently, I'm deep-diving into <b>scalable architectures</b> and <b>mobile UX</b>.
+</p>
 
 
 
@@ -63,7 +65,7 @@
 
 <div align="center">
   <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-    <h2><img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/welcome.gif" width="50" alt="Welcome GIF" style="margin-bottom: 10px;"> Arsenal Tecnológico</h2>
+    <h2><img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/welcome.gif" width="50" alt="Welcome GIF" style="margin-bottom: 10px;"> Technological Arsenal</h2>
   </div>
   
   <br>
@@ -86,7 +88,7 @@
     </tr>
     <tr>
       <td align="center" style="border: none; padding-top: 20px;">
-        <b>⚙️ FERRAMENTAS</b><br><br>
+        <b>⚙️ TOOLS</b><br><br>
         <img src="https://go-skill-icons.vercel.app/api/icons?i=git,github,vscode,postman,figma,flutterflow,xcode,supabase,windows,apple,linux&theme=dark" alt="Tools"/>
       </td>
     </tr>
@@ -95,7 +97,7 @@
 
 
 <div align="center">
-  <h2> <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/sonic.gif" width="50" alt="Sonic" style="margin-bottom: -10px;"> Estatísticas & Analytics</h2>
+  <h2> <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/sonic.gif" width="50" alt="Sonic" style="margin-bottom: -10px;"> Statistics & Analytics</h2>
   
  
   
