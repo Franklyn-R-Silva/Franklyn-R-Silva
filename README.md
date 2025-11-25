@@ -3,14 +3,9 @@
       <h1>Franklyn Roberto</h1>
 </div>   
 <!-- GIF de Boas-vindas -->     
-<h4 align="center">
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
-   
-<!-- Efeito de texto dinâmico -->    
 
-<img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=420&height=45&lines=Desenvolvedor+Mobile+%7C+Android+%26+iOS;Especialista+em+Flutter+%26+Dart;Codificando+com+propósito+mobile;Sempre+buscando+o+código+limpo!&center=true" alt="Typing Effect"/>
-  <br>
-  <!-- Bloco de Redes Sociais --> 
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
+<div align="center">
   <div>
     <a href="https://api.whatsapp.com/send?phone=82999915558" target="_blank">
       <img src="https://img.shields.io/badge/Whatsapp-1FA413?style=for-the-badge&logo=whatsapp&logoColor=white" title="Whatsapp"/> 
@@ -43,7 +38,8 @@
       <img alt="Followers" title="Follow me on GitHub" src="https://img.shields.io/github/followers/Franklyn-R-Silva?color=236ad3&style=for-the-badge&logo=github&label=Follow"/>
     </a>
   </div>
-</h4>
+  <img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=420&height=45&lines=Desenvolvedor+Mobile+%7C+Android+%26+iOS;Especialista+em+Flutter+%26+Dart;Codificando+com+propósito+mobile;Sempre+buscando+o+código+limpo!&center=true" alt="Typing Effect"/>
+</div>
 
 <div align="center">
           
