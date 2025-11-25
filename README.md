@@ -1,12 +1,13 @@
-<div align="center">
+<!-- <div align="center">
     <img src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/master/sapo_hackerman.gif" width="80" alt="Hacker Frog GIF">
       <h1>Franklyn Roberto</h1>
 </div>   
-<!-- GIF de Boas-vindas -->    
-
+<!-- GIF de Boas-vindas -->     
+<h4 align="center">
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
    
 <!-- Efeito de texto dinâmico -->    
-<h4 align="center">
+
 <img src="https://readme-typing-svg.herokuapp.com?color=22C55E&width=420&height=45&lines=Desenvolvedor+Mobile+%7C+Android+%26+iOS;Especialista+em+Flutter+%26+Dart;Codificando+com+propósito+mobile;Sempre+buscando+o+código+limpo!&center=true" alt="Typing Effect"/>
   <br>
   <!-- Bloco de Redes Sociais --> 
