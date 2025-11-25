@@ -3,9 +3,9 @@
       <h1>Franklyn Roberto</h1>
 </div>   
 <!-- GIF de Boas-vindas -->     
-
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
 <div align="center">
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
+
   <div>
     <a href="https://api.whatsapp.com/send?phone=82999915558" target="_blank">
       <img src="https://img.shields.io/badge/Whatsapp-1FA413?style=for-the-badge&logo=whatsapp&logoColor=white" title="Whatsapp"/> 
