@@ -8,7 +8,7 @@
     <tr>
       <td align="center" style="border: none;">
         <b>📱 MOBILE (CORE)</b><br><br>
-        <img src="https://go-skill-icons.vercel.app/api/icons?i=flutter,dart,react,kotlin,swift,java,androidstudio&theme=dark" alt="Mobile Skills"/>
+        <img src="https://go-skill-icons.vercel.app/api/icons?i=flutter,dart,react,java,androidstudio&theme=dark" alt="Mobile Skills"/>
       </td>
     </tr>
   </table>
