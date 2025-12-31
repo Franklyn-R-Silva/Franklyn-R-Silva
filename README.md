@@ -23,7 +23,7 @@
     <tr>
       <td align="center" style="border: none; padding-top: 20px;">
         <b>⚙️ TOOLS</b><br><br>
-        <img src="https://go-skill-icons.vercel.app/api/icons?i=git,github,vscode,postman,figma,flutterflow,xcode,supabase,windows,apple,linux&theme=dark" alt="Tools"/>
+        <img src="https://go-skill-icons.vercel.app/api/icons?i=git,github,vscode,postman,figma,flutterflow,xcode,firebase,supabase,windows,apple,linux&theme=dark" alt="Tools"/>
       </td>
     </tr>
   </table>
