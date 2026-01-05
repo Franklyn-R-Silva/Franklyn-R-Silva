@@ -29,6 +29,8 @@
   </table>
 </div>
 
+![Metrics](https://metrics.lecoq.io/Franklyn-R-Silva?template=classic&base=header%2C%20activity%2C%20community%2C%20repositories%2C%20metadata&languages=1&languages.limit=8&languages.sections=most-used&languages.details=percentage%2C%20lines&habits=1&habits.from=200&achievements=1&achievements.threshold=B&theme=tokyonight&config.timezone=America%2FSao_Paulo)
+
 <picture align="center">
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
