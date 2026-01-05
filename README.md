@@ -32,7 +32,7 @@
 
 
 <p align="center">
-  <img height="170" src="https://github-readme-streak-stats.herokuapp.com/?user=Franklyn-R-Silva&theme=tokyonight&hide_border=true" alt="Streak Stats"/>
+  <img src="https://github-readme-stats.vercel.app/api/wakatime?username=Franklyn-R-Silva&layout=compact&theme=tokyonight&langs_count=6" alt="WakaTime Stats" />
 </p>
 
 <p align="center">
