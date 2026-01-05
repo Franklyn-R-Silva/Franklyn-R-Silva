@@ -29,17 +29,6 @@
   </table>
 </div>
 
-
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/wakatime?username=Franklyn-R-Silva&layout=compact&theme=tokyonight&langs_count=6" alt="WakaTime Stats" />
-</p>
-
-<p align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Franklyn-R-Silva&theme=tokyonight&hide_border=true&area=true" width="100%" alt="Activity Graph" />
-</p>
-
-
 <picture align="center">
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
