@@ -31,16 +31,16 @@
 
 
 
-<div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
-    <img height="170em" src="https://github-readme-stats.vercel.app/api?username=Franklyn-R-Silva&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true" alt="GitHub Stats"/>
-    <img height="170em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Franklyn-R-Silva&layout=compact&theme=tokyonight&hide_border=true&langs_count=6&exclude_repo=Franklyn-R-Silva" alt="Top Langs"/>
-</div>
+<p align="center">
+  <img height="170" src="https://github-readme-stats.vercel.app/api?username=Franklyn-R-Silva&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true" alt="GitHub Stats"/>
+  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Franklyn-R-Silva&layout=compact&theme=tokyonight&hide_border=true&langs_count=6&exclude_repo=Franklyn-R-Silva" alt="Top Langs"/>
+</p>
 
-<div align="center">
-  <a href="https://github.com/hadesfranklyn/github-profile-trophy" target="_blank">
+<p align="center">
+  <a href="https://github.com/ryo-ma/github-profile-trophy">
     <img src="https://github-profile-trophy.vercel.app/?username=Franklyn-R-Silva&theme=tokyonight&row=1&no-frame=true" alt="Troféus"/>
   </a>
-</div>
+</p>
 
 
 <picture align="center">
