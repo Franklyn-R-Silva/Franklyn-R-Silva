@@ -2,8 +2,8 @@ name: Update README cards
 
 on:
   schedule:
-    - cron: "0 * * * *"
-  workflow_dispatch:
+    - cron: "0 * * * *" # Executa a cada hora
+  workflow_dispatch: # Permite rodar manualmente
 
 permissions:
   contents: write
@@ -11,9 +11,12 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure profile directory exists
+        run: mkdir -p profile
 
       - name: Generate stats card
         uses: Franklyn-R-Silva/github-readme-stats-fast-action@v1
@@ -47,12 +50,10 @@ jobs:
           path: profile/wakatime.svg
           token: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: Commit cards
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add profile/*.svg
           git commit -m "Update README cards" || echo "No changes to commit"
           git push origin HEAD
