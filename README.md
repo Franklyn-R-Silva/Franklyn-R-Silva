@@ -29,6 +29,18 @@
   </table>
 </div>
 
+<p align="center">
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: center;">
+    <!-- Estatísticas do Wakatime -->
+    <a href="https://github.com/anuraghazra/github-readme-stats&layout=compact" target="_blank">
+      <img alt="Linguagens utilizadas" width="40%" src="https://github-readme-stats.vercel.app/api/wakatime?username=hadesfranklyn&theme=radical&layout=compact"/>
+    </a>
+    <!-- Estatísticas do GitHub -->
+    <img height="200px" src="https://github-readme-stats.vercel.app/api?username=Franklyn-R-Silva&hide_border=true&show_icons=true&count_private=true&theme=tokyonight&bg_color=151515" alt="GitHub Stats"/>
+  </div>
+</p>
+
+
 
 <picture align="center">
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
