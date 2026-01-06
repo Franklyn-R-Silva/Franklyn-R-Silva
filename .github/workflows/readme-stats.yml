@@ -43,7 +43,7 @@ jobs:
         uses: Franklyn-R-Silva/github-readme-stats-fast-action@v1
         with:
           card: wakatime
-          options: username=praneshjs
+          options: username=Franklyn-R-Silva
           path: profile/wakatime.svg
           token: ${{ secrets.GITHUB_TOKEN }}
 
