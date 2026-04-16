@@ -2,7 +2,7 @@
 <div align="center">
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
 <div align="center">
-
+ 
 
   <table style="border: none;">
     <tr>
