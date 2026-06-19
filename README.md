@@ -27,6 +27,15 @@
       </td>
     </tr>
   </table>
+
+  <table style="border: none;">
+    <tr>
+      <td align="center" style="border: none; padding-top: 10px;">
+        <b>⏱️ WAKATIME — TEMPO DE CÓDIGO</b><br><br>
+        <img src="https://github-readme-stats.vercel.app/api/wakatime?username=Franklyn-R-Silva&layout=compact&langs_count=8&theme=tokyonight&hide_border=true&hide_title=true&card_width=480" alt="WakaTime Stats"/>
+      </td>
+    </tr>
+  </table>
 </div>
 
 
