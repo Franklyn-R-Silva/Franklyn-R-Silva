@@ -12,7 +12,8 @@
 
 **💻 Web · Backend · Desktop**
 
-<img src="https://go-skill-icons.vercel.app/api/icons?i=nodejs,ts,js,electron,spring,docker,oracle,postgres,mysql,html,css,tailwind,bootstrap&theme=dark&perline=13" alt="Web Skills"/>
+<img src="https://go-skill-icons.vercel.app/api/icons?i=java,python,cs,ts,js,nodejs,electron,spring,docker,oracle,postgres,mysql,html,css,tailwind,bootstrap&theme=dark&perline=13" alt="Web Skills"/>
+
 <img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=8b5cf6&height=2&section=header"/>
 
 **⚙️ Tools**
