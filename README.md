@@ -1,53 +1,39 @@
 <div align="center">
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=Franklyn%20Roberto&desc=Mobile%20Developer&descSize=20&descAlignY=67&textBg=false&section=header&reversal=false">
+<!-- ─────────────────────  TERMINAL PROFILE CARD  ───────────────────── -->
 
-<!-- ───────────────────────────  TECH STACK  ─────────────────────────── -->
-
-**📱 Mobile (Core)**
-
-<img src="https://go-skill-icons.vercel.app/api/icons?i=flutter,dart,react,java,androidstudio&theme=dark" alt="Mobile Skills"/>
-
-<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=8b5cf6&height=2&section=header"/>
-
-**💻 Web · Backend · Desktop**
-
-<img src="https://go-skill-icons.vercel.app/api/icons?i=java,python,cs,ts,js,nodejs,electron,spring,docker,oracle,postgres,mysql,html,css,tailwind,bootstrap,astro&theme=dark&perline=13" alt="Web Skills"/>
-
-<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=8b5cf6&height=2&section=header"/>
-
-**⚙️ Tools**
-
-<img src="https://go-skill-icons.vercel.app/api/icons?i=git,github,vscode,postman,figma,flutterflow,xcode,firebase,supabase,windows,apple,linux&theme=dark" alt="Tools"/>
+<a href="https://github.com/Franklyn-R-Silva">
+  <picture>
+    <source media="(prefers-color-scheme: dark)"  srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/main/dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/main/light.svg">
+    <img alt="Franklyn Roberto — terminal profile card" src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/main/dark.svg" width="100%">
+  </picture>
+</a>
 
 <br>
 
-<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=8b5cf6&height=2&section=header"/>
+<!-- ─────────  LINKS CLICÁVEIS (o card é imagem, aqui funciona)  ───────── -->
 
-<!-- ───────────────────────────  STATS  ─────────────────────────── -->
+<a href="https://devfrs.com"><img src="https://img.shields.io/badge/Portfolio-devfrs.com-8b5cf6?style=flat-square&logo=vercel&logoColor=white"/></a>
+<a href="https://www.linkedin.com/in/franklyn-r-silva"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white"/></a>
+<a href="mailto:franklyn.dev.mobile@gmail.com"><img src="https://img.shields.io/badge/Email-EA4335?style=flat-square&logo=gmail&logoColor=white"/></a>
+<a href="https://wa.me/5582999915558"><img src="https://img.shields.io/badge/WhatsApp-25D366?style=flat-square&logo=whatsapp&logoColor=white"/></a>
+<a href="https://instagram.com/franklynrsilva"><img src="https://img.shields.io/badge/Instagram-E4405F?style=flat-square&logo=instagram&logoColor=white"/></a>
 
-<p align="center">
-  <img height="170" src="https://github-readme-streak-stats.herokuapp.com/?user=Franklyn-R-Silva&theme=tokyonight&hide_border=true" alt="GitHub Streak"/>
-<!--  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Franklyn-R-Silva&layout=compact&langs_count=8&theme=tokyonight&hide_border=true&title_color=8b5cf6" alt="Top Languages"/> -->
-</p>
+<br><br>
 
+<!-- ─────────  LIVE STATS (referenciado pelo card)  ───────── -->
 
-<br>
+<img height="155" src="https://github-readme-stats.vercel.app/api?username=Franklyn-R-Silva&show_icons=true&theme=tokyonight&hide_border=true&hide_title=true&title_color=8b5cf6&icon_color=22D3EE" alt="stats"/>
+<img height="155" src="https://github-readme-streak-stats.herokuapp.com/?user=Franklyn-R-Silva&theme=tokyonight&hide_border=true&ring=8b5cf6&fire=22D3EE&currStreakLabel=8b5cf6" alt="streak"/>
 
-<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=8b5cf6&height=2&section=header"/>
+<br><br>
 
-
-
-<!-- ───────────────────────────  SNAKE  ─────────────────────────── -->
+<!-- ─────────  SNAKE (assinatura)  ───────── -->
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake-dark.svg">
-  <img alt="github contribution grid snake animation" src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake.svg">
+  <img alt="snake" src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/output/github-contribution-grid-snake.svg">
 </picture>
-
-<br>
-
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=120&color=gradient&section=footer&reversal=true"/>
 
 </div>

@@ -1,17 +1,17 @@
 name: generate animation
 
 on:
-  # run automatically every 24 hours
+  # run automatically every 24 hours (daily at 00:00 UTC)
   schedule:
-    - cron: "0 */24 * * *" 
+    - cron: "0 0 * * *"
   
   # allows to manually run the job at any time
   workflow_dispatch:
   
-  # run on every push on the master branch
+  # run on every push on the main branch
   push:
     branches:
-    - master
+    - main
     
   
 
@@ -42,3 +42,27 @@ jobs:
           build_dir: dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # regenerate the terminal profile card so its dynamic data (uptime / sync date)
+  # stays fresh. Skipped on push to avoid the bot's own commit re-triggering the run.
+  refresh-card:
+    if: github.event_name != 'push'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: rebuild dark.svg / light.svg
+        run: python scripts/build_profile.py
+      - name: commit if the card changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dark.svg light.svg
+          git diff --staged --quiet || git commit -m "chore: daily profile card refresh"
+          git push
