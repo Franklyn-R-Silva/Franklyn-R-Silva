@@ -28,7 +28,7 @@
 
 <p align="center">
   <img height="170" src="https://github-readme-streak-stats.herokuapp.com/?user=Franklyn-R-Silva&theme=tokyonight&hide_border=true" alt="GitHub Streak"/>
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Franklyn-R-Silva&layout=compact&langs_count=8&theme=tokyonight&hide_border=true&title_color=8b5cf6" alt="Top Languages"/>
+<!--  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Franklyn-R-Silva&layout=compact&langs_count=8&theme=tokyonight&hide_border=true&title_color=8b5cf6" alt="Top Languages"/> -->
 </p>
 
 
