@@ -55,6 +55,47 @@ _days = (_today - CODING_SINCE).days
 DATA["UptimeShort"] = f"up {_days}d"
 SYNC = _today.strftime("%Y-%m-%d")
 
+# ---- live streak stats, scraped from github-readme-streak-stats at build time ----
+# The daily `refresh-card` CI job re-runs this, keeping the numbers fresh.
+# Returns None on any network/parse failure so the build never breaks (offline/CI hiccup).
+def fetch_streak(user):
+    import urllib.request, re
+    url = f"https://github-readme-streak-stats.herokuapp.com/?user={user}"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "profile-card-build"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            svg = r.read().decode("utf-8", "ignore")
+    except Exception:
+        return None
+    vals = [m.strip() for m in re.findall(r"<text[^>]*>([^<]+)</text>", svg)]
+    nums = [v for v in vals if re.fullmatch(r"[\d,]+", v)]
+    if len(nums) < 3:
+        return None
+
+    def num_before(label):
+        if label not in vals:
+            return None
+        for j in range(vals.index(label) - 1, -1, -1):
+            if re.fullmatch(r"[\d,]+", vals[j]):
+                return vals[j]
+        return None
+
+    # current streak = the number carrying the 'currstreak' animation
+    current = None
+    for m in re.finditer(r"<text[^>]*>([\d,]+)</text>", svg):
+        if "currstreak" in svg[max(0, m.start() - 180): m.start() + len(m.group(0))]:
+            current = m.group(1)
+            break
+    total = num_before("Total Contributions") or nums[0]
+    longest = num_before("Longest Streak") or nums[-1]
+    if current is None:
+        current = next((n for n in nums if n not in (total, longest)), nums[1])
+    years = re.findall(r"(20\d\d)", " ".join(vals))
+    since = min(years) if years else ""
+    return {"total": total, "current": current, "longest": longest, "since": since}
+
+STATS = fetch_streak(DATA["Github"])
+
 # ------------------------------------------------------------------ ascii
 def gen_ascii():
     base = Image.open(SRC).convert("L")
@@ -105,12 +146,21 @@ LINES = [
     ("kv2", "Grid", "WhatsApp",  DATA["WhatsApp"]),
     ("kv2", "Grid", "Github",    DATA["Github"]),
     ("blank",),
-    ("sec", "Live Stats"),
-    ("txt", f"Synced {SYNC} · live GitHub stats below in README ↓"),
 ]
+if STATS:
+    LINES += [
+        ("sec2", "Live Stats", SYNC),
+        ("kv2", "Grid", "Streak",  f'{STATS["current"]}d current · {STATS["longest"]}d longest'),
+        ("kv2", "Grid", "Commits", f'{STATS["total"]} contributions since {STATS["since"]}'),
+    ]
+else:
+    LINES += [
+        ("sec", "Live Stats"),
+        ("txt", f"Synced {SYNC} · live GitHub stats below in README ↓"),
+    ]
 
 VALUE_COL = 33
-TX, TY0, TSTEP = 520, 38, 19
+TX, TY0, TSTEP = 520, 37, 18
 
 def build_line_tspans(kind, parts, y):
     if kind == "head":
@@ -122,6 +172,12 @@ def build_line_tspans(kind, parts, y):
     if kind == "sec":
         dash = " -" + "—"*44 + "-—-"
         return (f'<tspan x="{TX}" y="{y}" class="accent">- {esc(parts[0])}</tspan>'
+                f'<tspan class="cc">{dash}</tspan>')
+    if kind == "sec2":
+        dash = " -" + "—"*28 + "-—-"
+        return (f'<tspan x="{TX}" y="{y}" class="accent">- {esc(parts[0])}</tspan>'
+                f'<tspan class="cc">  ·  </tspan>'
+                f'<tspan class="value">{esc(parts[1])}</tspan>'
                 f'<tspan class="cc">{dash}</tspan>')
     if kind == "blank":
         return f'<tspan x="{TX}" y="{y}" class="cc">. </tspan>'
@@ -215,7 +271,7 @@ def build_svg(theme, ascii_lines):
             f'<animate attributeName="width" from="0" to="690" dur="0.34s" '
             f'begin="{begin:.2f}s" fill="freeze"/></rect></clipPath>')
         inner = build_line_tspans(spec[0], spec[1:], y)
-        flt = ' filter="url(#softGlow)"' if spec[0] in ("head", "sec") else ""
+        flt = ' filter="url(#softGlow)"' if spec[0] in ("head", "sec", "sec2") else ""
         texts.append(f'<g clip-path="url(#lc{i})"><text x="{TX}" y="0" fill="{p["value"]}"{flt}>{inner}</text></g>')
     clips_s = "".join(clips)
     texts_s = "\n".join(texts)
