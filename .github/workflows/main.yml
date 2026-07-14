@@ -59,6 +59,9 @@ jobs:
       - run: pip install pillow
       - name: rebuild dark.svg / light.svg
         run: python scripts/build_profile.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       # higher API rate limit + reliable search
+          WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}  # optional: adds the WakaTime row
       - name: commit if the card changed
         run: |
           git config user.name  "github-actions[bot]"

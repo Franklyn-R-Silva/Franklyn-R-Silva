@@ -94,7 +94,62 @@ def fetch_streak(user):
     since = min(years) if years else ""
     return {"total": total, "current": current, "longest": longest, "since": since}
 
-STATS = fetch_streak(DATA["Github"])
+# ---- GitHub API metrics (stars, forks, PRs, issues, followers, top languages) ----
+# Uses GITHUB_TOKEN if present (CI) for higher rate limits; works unauthenticated too.
+def fetch_github(user):
+    import urllib.request, json, collections
+    tok = os.environ.get("GITHUB_TOKEN")
+    def api(path):
+        h = {"User-Agent": "profile-card", "Accept": "application/vnd.github+json"}
+        if tok:
+            h["Authorization"] = "Bearer " + tok
+        with urllib.request.urlopen(urllib.request.Request("https://api.github.com" + path, headers=h), timeout=25) as r:
+            return json.load(r)
+    try:
+        prof = api(f"/users/{user}")
+        repos = []
+        for pg in (1, 2, 3):
+            r = api(f"/users/{user}/repos?per_page=100&page={pg}&type=owner")
+            repos += r
+            if len(r) < 100:
+                break
+        own = [x for x in repos if not x.get("fork")]
+        stars = sum(x.get("stargazers_count", 0) for x in repos)
+        forks = sum(x.get("forks_count", 0) for x in repos)
+        cnt = collections.Counter(x["language"] for x in own if x.get("language"))
+        tot = sum(cnt.values()) or 1
+        langs = [(l, round(c / tot * 100)) for l, c in cnt.most_common(5)]
+        try:
+            prs = api(f"/search/issues?q=author:{user}+type:pr&per_page=1").get("total_count")
+            iss = api(f"/search/issues?q=author:{user}+type:issue&per_page=1").get("total_count")
+        except Exception:
+            prs = iss = None
+        return dict(followers=prof.get("followers"), following=prof.get("following"),
+                    repos=prof.get("public_repos"), stars=stars, forks=forks,
+                    prs=prs, issues=iss, langs=langs)
+    except Exception:
+        return None
+
+# ---- WakaTime weekly coding time (optional; needs WAKATIME_API_KEY secret) ----
+def fetch_wakatime():
+    import urllib.request, json, base64
+    key = os.environ.get("WAKATIME_API_KEY")
+    if not key:
+        return None
+    try:
+        auth = base64.b64encode(key.encode()).decode()
+        url = "https://wakatime.com/api/v1/users/current/stats/last_7_days"
+        req = urllib.request.Request(url, headers={"Authorization": "Basic " + auth})
+        with urllib.request.urlopen(req, timeout=25) as r:
+            data = json.load(r)["data"]
+        langs = [(l["name"], l["text"]) for l in data.get("languages", [])[:4]]
+        return dict(total=data.get("human_readable_total", ""), langs=langs)
+    except Exception:
+        return None
+
+STREAK = fetch_streak(DATA["Github"])
+GH = fetch_github(DATA["Github"])
+WAKA = fetch_wakatime()
 
 # ------------------------------------------------------------------ ascii
 def gen_ascii():
@@ -118,8 +173,10 @@ def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 # ------------------------------------------------------------------ layout
-L_X, L_Y, L_W, L_H = 14, 26, 488, 506      # left panel (VISUAL.MAP)
-R_X, R_Y, R_W, R_H = 508, 10, 655, 522     # right panel (SYSTEM.INFO)
+L_X, L_Y, L_W, L_H = 14, 26, 488, 479      # top-left panel (VISUAL.MAP)
+R_X, R_Y, R_W, R_H = 508, 10, 655, 495     # top-right panel (SYSTEM.INFO)
+M_X, M_Y, M_W, M_H = 14, 532, 1149, 184    # 3rd card (SYSTEM.METRICS), full width
+CANVAS_H = 38 + M_Y + M_H + 14             # dynamic overall canvas height
 
 LINES = [
     ("head", DATA["user"]),
@@ -145,22 +202,10 @@ LINES = [
     ("kv2", "Grid", "Instagram", DATA["Instagram"]),
     ("kv2", "Grid", "WhatsApp",  DATA["WhatsApp"]),
     ("kv2", "Grid", "Github",    DATA["Github"]),
-    ("blank",),
 ]
-if STATS:
-    LINES += [
-        ("sec2", "Live Stats", SYNC),
-        ("kv2", "Grid", "Streak",  f'{STATS["current"]}d current · {STATS["longest"]}d longest'),
-        ("kv2", "Grid", "Commits", f'{STATS["total"]} contributions since {STATS["since"]}'),
-    ]
-else:
-    LINES += [
-        ("sec", "Live Stats"),
-        ("txt", f"Synced {SYNC} · live GitHub stats below in README ↓"),
-    ]
 
 VALUE_COL = 33
-TX, TY0, TSTEP = 520, 37, 18
+TX, TY0, TSTEP = 520, 40, 19
 
 def build_line_tspans(kind, parts, y):
     if kind == "head":
@@ -224,6 +269,60 @@ PALETTES = {
         scanblend="multiply", scanop="0.55", glow="0.7", asciiglow="0.5",
         ghost1="#334155", ghost2="#475569", ghostblend="multiply"),
 }
+
+def render_metrics(p, begin):
+    """3rd full-width card: SYSTEM.METRICS dashboard (auto-fetched numbers)."""
+    if not (STREAK or GH):
+        return ""
+    RS = 20
+    hy = M_Y + 56        # column header baseline
+    ry0 = M_Y + 80       # first data row baseline
+
+    def column(x, header, rows, field=11):
+        out = [f'<text x="{x}" y="{hy}" class="mhead">{esc(header)}</text>']
+        for k, (lab, val) in enumerate(rows):
+            dots = "." * max(2, field - len(lab))
+            out.append(
+                f'<text x="{x}" y="{ry0 + k*RS}"><tspan class="mkey">{esc(lab)}</tspan>'
+                f'<tspan class="mcc"> {dots} </tspan><tspan class="mval">{esc(str(val))}</tspan></text>')
+        return "".join(out)
+
+    cols = []
+    if STREAK:
+        cols.append(column(40, "CONTRIBUTIONS", [
+            ("total", STREAK["total"]), ("current", f'{STREAK["current"]}d'),
+            ("longest", f'{STREAK["longest"]}d'), ("since", STREAK["since"])]))
+    if GH:
+        cols.append(column(340, "IMPACT", [
+            ("stars", GH["stars"]), ("forks", GH["forks"]),
+            ("pull reqs", "—" if GH["prs"] is None else GH["prs"]),
+            ("issues", "—" if GH["issues"] is None else GH["issues"])]))
+        cols.append(column(630, "NETWORK", [
+            ("followers", GH["followers"]), ("following", GH["following"]),
+            ("repos", GH["repos"])]))
+    lang = ""
+    if GH and GH["langs"]:
+        lang = f'<text x="880" y="{hy}" class="mhead">LANGUAGES</text>'
+        for k, (name, pct) in enumerate(GH["langs"]):
+            bar = "█" * min(16, max(1, round(pct / 3.5)))
+            lab = name[:11].ljust(12)
+            lang += (f'<text x="880" y="{ry0 + k*RS}"><tspan class="mkey">{esc(lab)}</tspan>'
+                     f'<tspan class="mbar">{bar}</tspan><tspan class="mval"> {pct}%</tspan></text>')
+    waka = ""
+    if WAKA and WAKA.get("langs"):
+        s = " · ".join(f'{l} {t}' for l, t in WAKA["langs"])
+        waka = (f'<text x="40" y="{M_Y + M_H - 14}"><tspan class="mhead">WAKATIME 7d  </tspan>'
+                f'<tspan class="mval">{esc(WAKA.get("total",""))} — {esc(s)}</tspan></text>')
+
+    return (
+        f'<g opacity="0">'
+        f'<rect x="{M_X}" y="{M_Y}" width="{M_W}" height="{M_H}" rx="14" fill="{p["bg0"]}" '
+        f'fill-opacity="0.35" stroke="url(#borderGrad)" stroke-width="1" opacity="0.35"/>'
+        f'<text x="{M_X + 20}" y="{M_Y + 26}" class="panel-title">SYSTEM.METRICS</text>'
+        f'<text x="{M_X + M_W - 20}" y="{M_Y + 26}" text-anchor="end" class="mcc">synced {SYNC}</text>'
+        f'{"".join(cols)}{lang}{waka}'
+        f'<animate attributeName="opacity" values="0;1" dur="0.7s" begin="{begin:.2f}s" fill="freeze"/>'
+        f'</g>')
 
 def build_svg(theme, ascii_lines):
     p = PALETTES[theme]
@@ -289,8 +388,9 @@ def build_svg(theme, ascii_lines):
 
     cursor_y = TY0 + (len(LINES)-2) * TSTEP - 15
     cursor_begin = BOOT_END + len(LINES) * 0.10
+    metrics_svg = render_metrics(p, BOOT_END + len(LINES) * 0.10 + 0.2)
 
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="610" viewBox="0 0 1180 610">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="{CANVAS_H}" viewBox="0 0 1180 {CANVAS_H}">
 <defs>
   <linearGradient id="asciiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
     <stop offset="0%" stop-color="{p['g1']}"><animate attributeName="stop-color" values="{p['g1']};{p['g2']};{p['g3']};{p['g1']}" dur="9s" repeatCount="indefinite"/></stop>
@@ -328,7 +428,7 @@ def build_svg(theme, ascii_lines):
       <animate attributeName="scale" values="0;0;22;3;14;0;0" keyTimes="0;0.71;0.735;0.76;0.8;0.84;1" dur="7s" repeatCount="indefinite"/>
     </feDisplacementMap>
   </filter>
-  <mask id="revealMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1180" height="620">
+  <mask id="revealMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1180" height="{CANVAS_H + 10}">
     <rect x="0" y="0" width="1180" height="0" fill="#fff">
       <animate attributeName="height" from="0" to="{reveal_to:.0f}" dur="2.4s" begin="{reveal_begin:.2f}s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
     </rect>
@@ -346,11 +446,16 @@ def build_svg(theme, ascii_lines):
     .scan-label {{ font-family: 'Courier New', Consolas, monospace; font-size: 10px; fill: {p['scan']}; letter-spacing: 1px; }}
     .panel-title {{ font-family: 'Courier New', Consolas, monospace; font-size: 11px; fill: {p['ptitle']}; letter-spacing: 2px; opacity: 0.7; }}
     .cursor-blink {{ fill: {p['scanfill']}; }}
+    .mhead {{ font-family: 'Courier New', Consolas, monospace; font-size: 11px; fill: {p['accent']}; font-weight: bold; letter-spacing: 1.5px; }}
+    .mkey  {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: {p['key']}; font-weight: bold; }}
+    .mcc   {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: {p['cc']}; }}
+    .mval  {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: {p['value']}; }}
+    .mbar  {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: url(#asciiGrad); }}
   </style>
 </defs>
 
-<rect width="1180" height="610" rx="18" fill="url(#bgGlow)"/>
-<rect width="1180" height="610" rx="18" fill="url(#scanlines)"/>
+<rect width="1180" height="{CANVAS_H}" rx="18" fill="url(#bgGlow)"/>
+<rect width="1180" height="{CANVAS_H}" rx="18" fill="url(#scanlines)"/>
 
 <g filter="url(#glitch)">
 <g id="titlebar">
@@ -385,6 +490,8 @@ def build_svg(theme, ascii_lines):
   <rect x="522" y="{cursor_y}" width="9" height="16" class="cursor-blink" opacity="0">
     <animate attributeName="opacity" values="0;0;1;0;1;0;1;0" keyTimes="0;0.01;0.02;0.3;0.5;0.7;0.85;1" dur="1.4s" begin="{cursor_begin:.2f}s" repeatCount="indefinite"/>
   </rect>
+
+  {metrics_svg}
 </g>
 </g>
 
@@ -396,10 +503,10 @@ def build_svg(theme, ascii_lines):
 </rect>
 
 <rect x="0" y="-90" width="1180" height="90" fill="url(#scanGrad)" opacity="{p['scanop']}" style="mix-blend-mode:{p['scanblend']}">
-  <animateTransform attributeName="transform" type="translate" from="0 -90" to="0 700" dur="4.6s" repeatCount="indefinite"/>
+  <animateTransform attributeName="transform" type="translate" from="0 -90" to="0 {CANVAS_H + 90}" dur="4.6s" repeatCount="indefinite"/>
 </rect>
 
-<rect x="3" y="3" width="1174" height="604" rx="16" fill="none" stroke="url(#borderGrad)" stroke-width="2" opacity="0.8">
+<rect x="3" y="3" width="1174" height="{CANVAS_H - 6}" rx="16" fill="none" stroke="url(#borderGrad)" stroke-width="2" opacity="0.8">
   <animate attributeName="opacity" values="0.5;0.95;0.5" dur="3.2s" repeatCount="indefinite"/>
 </rect>
 </svg>

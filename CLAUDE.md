@@ -8,7 +8,9 @@ This is a **GitHub special profile repository** (`Franklyn-R-Silva/Franklyn-R-Si
 
 ## The terminal profile card (main artifact)
 
-The centerpiece is a **terminal-style SVG card** (inspired by `Sushmitadasari/Sushmitadasari`): a fake terminal window running `./profile.sh --live` with a left **VISUAL.MAP** panel (the owner's photo rendered as animated ASCII art) and a right **SYSTEM.INFO** panel (identity/skills/contact fields typed out line-by-line). Animations use SMIL (`<animate>` / clip-path reveals / a moving scanline) — these play on GitHub when the SVG is served from `raw.githubusercontent.com`, so the README references the raw URLs, not relative paths.
+The centerpiece is a **terminal-style SVG card** (inspired by `Sushmitadasari/Sushmitadasari`): a fake terminal window running `./profile.sh --live`. Layout is **"1+1 / 2"** — two top panels side by side (left **VISUAL.MAP** = the owner's photo as animated ASCII; right **SYSTEM.INFO** = identity/skills/contact fields typed line-by-line) plus a **third full-width card below, SYSTEM.METRICS**, a dashboard of auto-fetched numbers in four columns (CONTRIBUTIONS / IMPACT / NETWORK / LANGUAGES with ASCII bars). Animations use SMIL (`<animate>` / clip-path reveals / a moving scanline / glitch) — these play on GitHub when the SVG is served from `raw.githubusercontent.com`, so the README references the raw URLs, not relative paths.
+
+The overall canvas height is **computed** (`CANVAS_H`) from the metrics panel position, so adding rows/panels resizes the SVG automatically — don't hardcode heights; the viewBox, backgrounds, scan sweep, reveal mask, and border all reference `CANVAS_H`.
 
 Two theme variants are generated:
 - `dark.svg` / `light.svg` — selected via `<picture>` `prefers-color-scheme` in `README.md`.
