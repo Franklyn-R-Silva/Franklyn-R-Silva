@@ -19,10 +19,10 @@ OUT_DIR = ROOT                                        # dark.svg / light.svg lan
 FS_ASCII = 6.2
 LH_ASCII = 6.2
 ADV = FS_ASCII * 0.60          # monospace advance per char
-COLS = 116                     # portrait width in characters (bigger = more detail)
+COLS = 108                     # portrait width in characters (bigger = more detail)
 CROP = (0.15, 0.12, 0.85, 0.67)  # cx0, cy0, cx1, cy1 as fractions of the photo
 RAMP = " ..'':-~=++**cvxzsoaekw%8B#@@"   # dark -> light density ramp
-BLACK_FLOOR = 42               # pixels darker than this render as empty background
+BLACK_FLOOR = 48               # pixels darker than this render as empty background
 
 # ---- identity data -----------------------------------------------------
 DATA = {
@@ -54,6 +54,21 @@ _today = datetime.date.today()
 _days = (_today - CODING_SINCE).days
 DATA["UptimeShort"] = f"up {_days}d"
 SYNC = _today.strftime("%Y-%m-%d")
+
+def _ago(iso):
+    if not iso:
+        return ""
+    import datetime as d
+    try:
+        t = d.datetime.fromisoformat(iso.replace("Z", "+00:00"))
+        s = (d.datetime.now(d.timezone.utc) - t).total_seconds()
+        if s < 3600:
+            return f"{int(s // 60)}m ago"
+        if s < 86400:
+            return f"{int(s // 3600)}h ago"
+        return f"{int(s // 86400)}d ago"
+    except Exception:
+        return ""
 
 # ---- live streak stats, scraped from github-readme-streak-stats at build time ----
 # The daily `refresh-card` CI job re-runs this, keeping the numbers fresh.
@@ -122,10 +137,12 @@ def fetch_github(user):
         stars = sum(x.get("stargazers_count", 0) for x in own)
         forks = sum(x.get("forks_count", 0) for x in own)
         # languages: by code bytes when authenticated (accurate, incl. private),
-        # else by primary-language repo count (1 request, no per-repo calls)
+        # else by primary-language repo count (1 request, no per-repo calls).
+        # Cap the per-repo calls to the most-recently-pushed repos to keep builds fast.
         by = collections.Counter()
         if tok:
-            for x in own:
+            recent = sorted(own, key=lambda x: x.get("pushed_at") or "", reverse=True)[:80]
+            for x in recent:
                 try:
                     for l, b in api(f"/repos/{x['full_name']}/languages").items():
                         by[l] += b
@@ -139,6 +156,13 @@ def fetch_github(user):
         tot = sum(by.values()) or 1
         langs = [(l, round(b / tot * 100)) for l, b in by.most_common(5)]
         repos_count = len(own) if pat else prof.get("public_repos")
+        # top repos by stars, most recent push, account age
+        top = sorted(own, key=lambda x: x.get("stargazers_count", 0), reverse=True)[:3]
+        top_repos = [(x["name"][:17], x.get("stargazers_count", 0), x.get("language") or "") for x in top]
+        pushes = [x.get("pushed_at") for x in own if x.get("pushed_at")]
+        last_push = _ago(max(pushes)) if pushes else ""
+        joined = (prof.get("created_at") or "")[:4]
+        age = (_today.year - int(joined)) if joined.isdigit() else ""
         try:
             prs = api(f"/search/issues?q=author:{user}+type:pr&per_page=1").get("total_count")
             iss = api(f"/search/issues?q=author:{user}+type:issue&per_page=1").get("total_count")
@@ -146,7 +170,8 @@ def fetch_github(user):
             prs = iss = None
         return dict(followers=prof.get("followers"), following=prof.get("following"),
                     repos=repos_count, stars=stars, forks=forks, prs=prs, issues=iss,
-                    langs=langs, private=bool(pat))
+                    langs=langs, private=bool(pat), top_repos=top_repos,
+                    last_push=last_push, joined=joined, age=age)
     except Exception:
         return None
 
@@ -178,12 +203,58 @@ def fetch_wakatime():
             if len(langs) >= 5:
                 break
         if langs:
-            return dict(total=data.get("human_readable_total", ""), langs=langs, range=label)
+            eds = data.get("editors", [])
+            oss = data.get("operating_systems", [])
+            return dict(total=data.get("human_readable_total", ""), langs=langs, range=label,
+                        daily=data.get("human_readable_daily_average", ""),
+                        editor=eds[0]["name"] if eds else "",
+                        os=oss[0]["name"] if oss else "")
     return None
+
+# ---- contribution heatmap (GraphQL incl. private via token, else public REST) ----
+def fetch_heatmap(user):
+    import urllib.request, json
+    tok = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN")
+    if tok:
+        try:
+            q = ('{"query":"query{user(login:\\"%s\\"){contributionsCollection'
+                 '{contributionCalendar{weeks{contributionDays{contributionCount weekday}}}}}}"}' % user)
+            req = urllib.request.Request("https://api.github.com/graphql", data=q.encode(),
+                                         headers={"Authorization": "Bearer " + tok,
+                                                  "User-Agent": "profile-card",
+                                                  "Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                weeks = json.load(r)["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]
+            grid = []
+            for w in weeks:
+                col = [0] * 7
+                for dd in w["contributionDays"]:
+                    col[dd["weekday"]] = dd["contributionCount"]
+                grid.append(col)
+            if grid:
+                return grid
+        except Exception:
+            pass
+    try:  # public fallback
+        import datetime as d
+        with urllib.request.urlopen(f"https://github-contributions-api.jogruber.de/v4/{user}?y=last", timeout=25) as r:
+            days = json.load(r).get("contributions", [])
+        grid, col = [], [0] * 7
+        for c in days:
+            wd = (d.date.fromisoformat(c["date"]).weekday() + 1) % 7   # Sun=0..Sat=6
+            col[wd] = c.get("count", 0)
+            if wd == 6:
+                grid.append(col); col = [0] * 7
+        if any(col):
+            grid.append(col)
+        return grid or None
+    except Exception:
+        return None
 
 STREAK = fetch_streak(DATA["Github"])
 GH = fetch_github(DATA["Github"])
 WAKA = fetch_wakatime()
+HEAT = fetch_heatmap(DATA["Github"])
 
 # ------------------------------------------------------------------ ascii
 def gen_ascii():
@@ -210,7 +281,8 @@ def esc(s):
 L_X, L_Y, L_W, L_H = 14, 26, 488, 479      # top-left panel (VISUAL.MAP)
 R_X, R_Y, R_W, R_H = 508, 10, 655, 495     # top-right panel (SYSTEM.INFO)
 M_X, M_Y, M_W, M_H = 14, 532, 1149, 184    # 3rd card (SYSTEM.METRICS), full width
-CANVAS_H = 38 + M_Y + M_H + 14             # dynamic overall canvas height
+N_X, N_Y, N_W, N_H = 14, M_Y + M_H + 16, 1149, 172   # 4th card (GIT.ACTIVITY)
+CANVAS_H = 38 + N_Y + N_H + 14             # dynamic overall canvas height
 
 LINES = [
     ("head", DATA["user"]),
@@ -291,7 +363,8 @@ PALETTES = {
         ptitle="#38BDF8", scanfill="#22D3EE", scanhi="#A5F3FC",
         scanlo="#7C3AED", scanline="#7DD3FC", titlebar="#0B1120",
         scanblend="screen", scanop="0.75", glow="1.5", asciiglow="1.1",
-        ghost1="#FF2E63", ghost2="#22D3EE", ghostblend="screen"),
+        ghost1="#FF2E63", ghost2="#22D3EE", ghostblend="screen",
+        heat=["#0f1b2e", "#0e7490", "#22D3EE", "#7C3AED", "#c084fc"]),
     "light": dict(   # monochrome: black on light (no purple/lilac/blue)
         bg0="#F1F5F9", bg1="#E2E8F0",
         g1="#0F172A", g2="#475569", g3="#000000",
@@ -301,7 +374,8 @@ PALETTES = {
         ptitle="#334155", scanfill="#334155", scanhi="#0F172A",
         scanlo="#334155", scanline="#CBD5E1", titlebar="#F8FAFC",
         scanblend="multiply", scanop="0.55", glow="0.7", asciiglow="0.5",
-        ghost1="#334155", ghost2="#475569", ghostblend="multiply"),
+        ghost1="#334155", ghost2="#475569", ghostblend="multiply",
+        heat=["#e2e8f0", "#94a3b8", "#64748b", "#334155", "#000000"]),
 }
 
 def render_metrics(p, begin):
@@ -335,28 +409,38 @@ def render_metrics(p, begin):
             ("followers", GH["followers"]), ("following", GH["following"]),
             ("repos", GH["repos"])]))
     # LANGUAGES column: prefer WakaTime hours (real coding time, incl. private repos);
-    # fall back to GitHub repo languages (%) when WakaTime isn't configured.
-    lang = ""
+    # fall back to GitHub repo languages (%). Bars are rects that grow in on reveal.
+    lang, hdr, items = "", None, []
     if WAKA and WAKA.get("langs"):
         hdr = f'LANGUAGES · {WAKA.get("range", "")}'.strip(" ·")
+        items = [(n, p, s) for (n, s, p) in WAKA["langs"][:5]]      # (name, pct, value)
+    elif GH and GH.get("langs"):
+        hdr = "LANGUAGES"
+        items = [(n, p, f"{p}%") for (n, p) in GH["langs"]]
+    if items:
+        bx, bw = 986, 74
         lang = f'<text x="880" y="{hy}" class="mhead">{esc(hdr)}</text>'
-        for k, (name, short, pct) in enumerate(WAKA["langs"][:5]):
-            bar = "█" * min(14, max(1, round(pct / 3.5)))
-            lab = name[:11].ljust(12)
-            lang += (f'<text x="880" y="{ry0 + k*RS}"><tspan class="mkey">{esc(lab)}</tspan>'
-                     f'<tspan class="mbar">{bar}</tspan><tspan class="mval"> {esc(short)}</tspan></text>')
-    elif GH and GH["langs"]:
-        lang = f'<text x="880" y="{hy}" class="mhead">LANGUAGES</text>'
-        for k, (name, pct) in enumerate(GH["langs"]):
-            bar = "█" * min(16, max(1, round(pct / 3.5)))
-            lab = name[:11].ljust(12)
-            lang += (f'<text x="880" y="{ry0 + k*RS}"><tspan class="mkey">{esc(lab)}</tspan>'
-                     f'<tspan class="mbar">{bar}</tspan><tspan class="mval"> {pct}%</tspan></text>')
+        for k, (name, pct, val) in enumerate(items):
+            yy = ry0 + k * RS
+            w = max(3, round(pct / 100 * bw))
+            gb = begin + 0.35 + k * 0.08
+            lang += (f'<text x="880" y="{yy}" class="mkey">{esc(name[:12])}</text>'
+                     f'<rect x="{bx}" y="{yy - 9}" width="{w}" height="10" rx="2" fill="url(#asciiGrad)">'
+                     f'<animate attributeName="width" from="0" to="{w}" dur="0.6s" begin="{gb:.2f}s" '
+                     f'fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/></rect>'
+                     f'<text x="{bx + bw + 8}" y="{yy}" class="mval">{esc(val)}</text>')
     waka = ""
-    # optional grand-total coding time line at the bottom of the panel
+    # grand-total coding time + daily average + editor/OS at the bottom of the panel
     if WAKA and WAKA.get("total"):
+        extra = ""
+        if WAKA.get("daily"):
+            extra += f' · avg {WAKA["daily"]}/day'
+        if WAKA.get("editor"):
+            extra += f' · {WAKA["editor"]}'
+        if WAKA.get("os"):
+            extra += f' · {WAKA["os"]}'
         waka = (f'<text x="40" y="{M_Y + M_H - 16}"><tspan class="mhead">CODE TIME · {esc(WAKA.get("range",""))}  </tspan>'
-                f'<tspan class="mval">{esc(WAKA["total"])} total tracked</tspan></text>')
+                f'<tspan class="mval">{esc(WAKA["total"])} total{esc(extra)}</tspan></text>')
 
     return (
         f'<g opacity="0">'
@@ -366,7 +450,69 @@ def render_metrics(p, begin):
         f'<text x="{M_X + M_W - 20}" y="{M_Y + 26}" text-anchor="end" class="mcc">synced {SYNC}</text>'
         f'{"".join(cols)}{lang}{waka}'
         f'<animate attributeName="opacity" values="0;1" dur="0.7s" begin="{begin:.2f}s" fill="freeze"/>'
+        f'<animateTransform attributeName="transform" type="translate" from="0 16" to="0 0" '
+        f'dur="0.6s" begin="{begin:.2f}s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>'
         f'</g>')
+
+def render_activity(p, begin):
+    """4th full-width card: contribution heatmap + top repos + freshness."""
+    if not (HEAT or (GH and GH.get("top_repos"))):
+        return ""
+    heat = p["heat"]
+    cell, gap = 10, 1
+    # --- contribution heatmap (left) ---
+    hm = ""
+    if HEAT:
+        weeks = HEAT[-53:]
+        mx = max((max(w) for w in weeks), default=1) or 1
+        hx, hy = N_X + 26, N_Y + 58
+        cells = []
+        for i, w in enumerate(weeks):    # one <g> per week column -> wave reveal
+            rects = "".join(
+                f'<rect x="{hx + i*(cell+gap)}" y="{hy + j*(cell+gap)}" width="{cell}" height="{cell}" '
+                f'rx="2" fill="{heat[0 if c <= 0 else min(4, 1 + int(c / mx * 3.999))]}"/>'
+                for j, c in enumerate(w))
+            cb = begin + 0.4 + i * 0.016
+            cells.append(f'<g opacity="0">{rects}'
+                         f'<animate attributeName="opacity" values="0;1" dur="0.28s" begin="{cb:.2f}s" fill="freeze"/></g>')
+        ly = hy + 7 * (cell + gap) + 14
+        leg = f'<text x="{hx}" y="{ly}" class="mcc" style="font-size:11px">less</text>'
+        for k in range(5):
+            leg += f'<rect x="{hx + 32 + k*13}" y="{ly - 9}" width="10" height="10" rx="2" fill="{heat[k]}"/>'
+        leg += f'<text x="{hx + 32 + 5*13 + 6}" y="{ly}" class="mcc" style="font-size:11px">more</text>'
+        hm = (f'<text x="{N_X + 26}" y="{N_Y + 42}" class="mhead">CONTRIBUTION MATRIX · 1 YEAR</text>'
+              + "".join(cells) + leg)
+    # --- top repos + activity (right) ---
+    rx = N_X + 720
+    right = ""
+    if GH and GH.get("top_repos"):
+        right += f'<text x="{rx}" y="{N_Y + 42}" class="mhead">TOP REPOS</text>'
+        for k, (name, stars, langn) in enumerate(GH["top_repos"]):
+            meta = f'{stars}★' + (f' {langn}' if langn else "")
+            dots = "." * max(2, 20 - len(name))
+            right += (f'<text x="{rx}" y="{N_Y + 64 + k*20}"><tspan class="mkey">{esc(name)}</tspan>'
+                      f'<tspan class="mcc"> {dots} </tspan><tspan class="mval">{esc(meta)}</tspan></text>')
+    if GH:
+        rows = []
+        if GH.get("last_push"):
+            rows.append(("last push", GH["last_push"]))
+        if GH.get("joined"):
+            rows.append(("on GitHub", f'since {GH["joined"]} · {GH["age"]}y'))
+        if rows:
+            right += f'<text x="{rx}" y="{N_Y + 128}" class="mhead">ACTIVITY</text>'
+            for k, (labn, val) in enumerate(rows):
+                dots = "." * max(2, 12 - len(labn))
+                right += (f'<text x="{rx}" y="{N_Y + 148 + k*18}"><tspan class="mkey">{esc(labn)}</tspan>'
+                          f'<tspan class="mcc"> {dots} </tspan><tspan class="mval">{esc(val)}</tspan></text>')
+    return (f'<g opacity="0">'
+            f'<rect x="{N_X}" y="{N_Y}" width="{N_W}" height="{N_H}" rx="14" fill="{p["bg0"]}" '
+            f'fill-opacity="0.35" stroke="url(#borderGrad)" stroke-width="1" opacity="0.35"/>'
+            f'<text x="{N_X + 20}" y="{N_Y + 26}" class="panel-title">GIT.ACTIVITY</text>'
+            f'{hm}{right}'
+            f'<animate attributeName="opacity" values="0;1" dur="0.7s" begin="{begin:.2f}s" fill="freeze"/>'
+            f'<animateTransform attributeName="transform" type="translate" from="0 16" to="0 0" '
+            f'dur="0.6s" begin="{begin:.2f}s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>'
+            f'</g>')
 
 def build_svg(theme, ascii_lines):
     p = PALETTES[theme]
@@ -374,15 +520,21 @@ def build_svg(theme, ascii_lines):
     block_h = rows * LH_ASCII
     block_w = COLS * ADV
     ax = L_X + (L_W - block_w) / 2 + 4
-    ay0 = L_Y + (L_H - block_h) / 2 + FS_ASCII
+    # center on the *visible* content (ascii has blank rows at the top/bottom),
+    # so the portrait isn't stuck to the panel's bottom edge
+    nb = [i for i, l in enumerate(ascii_lines) if l.strip()]
+    top_i, bot_i = (nb[0], nb[-1]) if nb else (0, rows - 1)
+    content_h = (bot_i - top_i + 1) * LH_ASCII
+    ay0 = L_Y + (L_H - content_h) / 2 + FS_ASCII - top_i * LH_ASCII
     reveal_to = block_h + 30
 
     at = [f'<tspan x="{ax:.1f}" y="{ay0 + i*LH_ASCII:.2f}" xml:space="preserve">{esc(line)}</tspan>'
           for i, line in enumerate(ascii_lines)]
     ascii_block = "\n".join(at)
 
-    # --- boot intro sequence (types first, then fades; info reveals after) ---
-    BOOT_END = 2.55
+    # --- CRT power-on, then boot intro, then data reveals ---
+    CRT = 1.05                     # old-TV turn-on finishes ~here
+    BOOT_END = CRT + 2.55
     reveal_begin = BOOT_END - 0.25
     boot_lines = [
         ("> booting devOS v4.8", "value"),
@@ -393,7 +545,7 @@ def build_svg(theme, ascii_lines):
     boot_items = []
     for j, bl in enumerate(boot_lines):
         by = 70 + j * 26
-        b_open = 0.25 + j * 0.5
+        b_open = CRT + 0.2 + j * 0.5
         seg = f'<tspan class="{bl[1]}" style="font-size:14px">{esc(bl[0])}</tspan>'
         if len(bl) > 2:
             seg += f'<tspan class="{bl[3]}" style="font-size:14px">{esc(bl[2])}</tspan>'
@@ -430,9 +582,10 @@ def build_svg(theme, ascii_lines):
         f'<text x="{TX+4}" y="{gy}" style="{ghost_style};fill:{p["ghost2"]}" opacity="0">{esc(DATA["user"])}'
         f'<animate attributeName="opacity" {ghost_op}/></text></g>')
 
-    cursor_y = TY0 + (len(LINES)-2) * TSTEP - 15
+    prompt_y = TY0 + len(LINES) * TSTEP
     cursor_begin = BOOT_END + len(LINES) * 0.10
     metrics_svg = render_metrics(p, BOOT_END + len(LINES) * 0.10 + 0.2)
+    activity_svg = render_activity(p, BOOT_END + len(LINES) * 0.10 + 0.5)
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="{CANVAS_H}" viewBox="0 0 1180 {CANVAS_H}">
 <defs>
@@ -477,6 +630,7 @@ def build_svg(theme, ascii_lines):
       <animate attributeName="height" from="0" to="{reveal_to:.0f}" dur="2.4s" begin="{reveal_begin:.2f}s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
     </rect>
   </mask>
+  <clipPath id="cardClip"><rect x="0" y="0" width="1180" height="{CANVAS_H}" rx="18"/></clipPath>
   {clips_s}
   <style>
     .ascii  {{ font-family: 'Courier New', Consolas, monospace; font-size: {FS_ASCII}px; fill: url(#asciiGrad); letter-spacing: 0px; }}
@@ -494,7 +648,6 @@ def build_svg(theme, ascii_lines):
     .mkey  {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: {p['key']}; font-weight: bold; }}
     .mcc   {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: {p['cc']}; }}
     .mval  {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: {p['value']}; }}
-    .mbar  {{ font-family: 'Courier New', Consolas, monospace; font-size: 13px; fill: url(#asciiGrad); }}
   </style>
 </defs>
 
@@ -531,11 +684,17 @@ def build_svg(theme, ascii_lines):
 
   {boot_svg}
 
-  <rect x="522" y="{cursor_y}" width="9" height="16" class="cursor-blink" opacity="0">
-    <animate attributeName="opacity" values="0;0;1;0;1;0;1;0" keyTimes="0;0.01;0.02;0.3;0.5;0.7;0.85;1" dur="1.4s" begin="{cursor_begin:.2f}s" repeatCount="indefinite"/>
-  </rect>
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.3s" begin="{cursor_begin - 0.2:.2f}s" fill="freeze"/>
+    <text x="522" y="{prompt_y}" class="accent">&gt;</text>
+    <rect x="537" y="{prompt_y - 13}" width="9" height="16" class="cursor-blink">
+      <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1.05s" repeatCount="indefinite"/>
+    </rect>
+  </g>
 
   {metrics_svg}
+
+  {activity_svg}
 </g>
 </g>
 
@@ -553,6 +712,24 @@ def build_svg(theme, ascii_lines):
 <rect x="3" y="3" width="1174" height="{CANVAS_H - 6}" rx="16" fill="none" stroke="url(#borderGrad)" stroke-width="2" opacity="0.8">
   <animate attributeName="opacity" values="0.5;0.95;0.5" dur="3.2s" repeatCount="indefinite"/>
 </rect>
+
+<!-- CRT power-on: shutters retract from a center line, tube-strike, flash -->
+<g clip-path="url(#cardClip)">
+  <rect x="0" y="0" width="1180" height="{CANVAS_H//2}" fill="url(#bgGlow)">
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="0 -{CANVAS_H//2}" dur="0.5s" begin="0.42s" fill="freeze" calcMode="spline" keySplines="0.5 0 0.7 1"/>
+  </rect>
+  <rect x="0" y="{CANVAS_H//2}" width="1180" height="{CANVAS_H - CANVAS_H//2}" fill="url(#bgGlow)">
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="0 {CANVAS_H - CANVAS_H//2}" dur="0.5s" begin="0.42s" fill="freeze" calcMode="spline" keySplines="0.5 0 0.7 1"/>
+  </rect>
+  <rect x="590" y="{CANVAS_H//2 - 2}" width="0" height="3.5" fill="{p['scanhi']}" opacity="0" style="mix-blend-mode:{p['scanblend']}">
+    <animate attributeName="width" values="0;1180" dur="0.36s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>
+    <animate attributeName="x" values="590;0" dur="0.36s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>
+    <animate attributeName="opacity" values="0;1;0.9;0" keyTimes="0;0.18;0.5;1" dur="0.95s" begin="0s" fill="freeze"/>
+  </rect>
+  <rect x="0" y="0" width="1180" height="{CANVAS_H}" fill="#EAF6FF" opacity="0">
+    <animate attributeName="opacity" values="0;0;0.4;0;0.12;0" keyTimes="0;0.42;0.52;0.62;0.7;1" dur="1.15s" begin="0s" fill="freeze"/>
+  </rect>
+</g>
 </svg>
 '''
 
