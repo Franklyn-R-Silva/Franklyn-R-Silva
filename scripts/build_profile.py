@@ -130,22 +130,36 @@ def fetch_github(user):
     except Exception:
         return None
 
-# ---- WakaTime weekly coding time (optional; needs WAKATIME_API_KEY secret) ----
+# ---- WakaTime coding hours per language (optional; needs WAKATIME_API_KEY secret) ----
+# Tries all-time first (sums every year) and falls back to shorter ranges if the
+# account plan doesn't expose it. Returns hours per language.
 def fetch_wakatime():
     import urllib.request, json, base64
     key = os.environ.get("WAKATIME_API_KEY")
     if not key:
         return None
-    try:
-        auth = base64.b64encode(key.encode()).decode()
-        url = "https://wakatime.com/api/v1/users/current/stats/last_7_days"
-        req = urllib.request.Request(url, headers={"Authorization": "Basic " + auth})
-        with urllib.request.urlopen(req, timeout=25) as r:
-            data = json.load(r)["data"]
-        langs = [(l["name"], l["text"]) for l in data.get("languages", [])[:4]]
-        return dict(total=data.get("human_readable_total", ""), langs=langs)
-    except Exception:
-        return None
+    auth = base64.b64encode(key.encode()).decode()
+    for rng, label in [("all_time", "ALL TIME"), ("last_year", "LAST YEAR"),
+                       ("last_30_days", "LAST 30 DAYS"), ("last_7_days", "LAST 7 DAYS")]:
+        try:
+            url = f"https://wakatime.com/api/v1/users/current/stats/{rng}"
+            req = urllib.request.Request(url, headers={"Authorization": "Basic " + auth})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                data = json.load(r)["data"]
+        except Exception:
+            continue
+        langs = []
+        for l in data.get("languages", []):
+            if l["name"].lower() == "other":
+                continue
+            h, m = int(l.get("hours", 0)), int(l.get("minutes", 0))
+            short = f"{h}h{m:02d}m" if h else f"{m}m"
+            langs.append((l["name"], short, round(l.get("percent", 0))))
+            if len(langs) >= 5:
+                break
+        if langs:
+            return dict(total=data.get("human_readable_total", ""), langs=langs, range=label)
+    return None
 
 STREAK = fetch_streak(DATA["Github"])
 GH = fetch_github(DATA["Github"])
@@ -300,8 +314,18 @@ def render_metrics(p, begin):
         cols.append(column(630, "NETWORK", [
             ("followers", GH["followers"]), ("following", GH["following"]),
             ("repos", GH["repos"])]))
+    # LANGUAGES column: prefer WakaTime hours (real coding time, incl. private repos);
+    # fall back to GitHub repo languages (%) when WakaTime isn't configured.
     lang = ""
-    if GH and GH["langs"]:
+    if WAKA and WAKA.get("langs"):
+        hdr = f'LANGUAGES · {WAKA.get("range", "")}'.strip(" ·")
+        lang = f'<text x="880" y="{hy}" class="mhead">{esc(hdr)}</text>'
+        for k, (name, short, pct) in enumerate(WAKA["langs"][:5]):
+            bar = "█" * min(14, max(1, round(pct / 3.5)))
+            lab = name[:11].ljust(12)
+            lang += (f'<text x="880" y="{ry0 + k*RS}"><tspan class="mkey">{esc(lab)}</tspan>'
+                     f'<tspan class="mbar">{bar}</tspan><tspan class="mval"> {esc(short)}</tspan></text>')
+    elif GH and GH["langs"]:
         lang = f'<text x="880" y="{hy}" class="mhead">LANGUAGES</text>'
         for k, (name, pct) in enumerate(GH["langs"]):
             bar = "█" * min(16, max(1, round(pct / 3.5)))
@@ -309,10 +333,10 @@ def render_metrics(p, begin):
             lang += (f'<text x="880" y="{ry0 + k*RS}"><tspan class="mkey">{esc(lab)}</tspan>'
                      f'<tspan class="mbar">{bar}</tspan><tspan class="mval"> {pct}%</tspan></text>')
     waka = ""
-    if WAKA and WAKA.get("langs"):
-        s = " · ".join(f'{l} {t}' for l, t in WAKA["langs"])
-        waka = (f'<text x="40" y="{M_Y + M_H - 14}"><tspan class="mhead">WAKATIME 7d  </tspan>'
-                f'<tspan class="mval">{esc(WAKA.get("total",""))} — {esc(s)}</tspan></text>')
+    # optional grand-total coding time line at the bottom of the panel
+    if WAKA and WAKA.get("total"):
+        waka = (f'<text x="40" y="{M_Y + M_H - 16}"><tspan class="mhead">CODE TIME · {esc(WAKA.get("range",""))}  </tspan>'
+                f'<tspan class="mval">{esc(WAKA["total"])} total tracked</tspan></text>')
 
     return (
         f'<g opacity="0">'
