@@ -60,8 +60,9 @@ jobs:
       - name: rebuild dark.svg / light.svg
         run: python scripts/build_profile.py
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}       # higher API rate limit + reliable search
-          WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}  # optional: adds the WakaTime row
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          # public metrics + higher rate limit
+          GH_PAT: ${{ secrets.GH_PAT }}                       # optional: includes PRIVATE repos
+          WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}   # optional: WakaTime coding hours
       - name: commit if the card changed
         run: |
           git config user.name  "github-actions[bot]"

@@ -95,38 +95,58 @@ def fetch_streak(user):
     return {"total": total, "current": current, "longest": longest, "since": since}
 
 # ---- GitHub API metrics (stars, forks, PRs, issues, followers, top languages) ----
-# Uses GITHUB_TOKEN if present (CI) for higher rate limits; works unauthenticated too.
+# GH_PAT (classic, scope repo) -> includes PRIVATE repos. Else GITHUB_TOKEN (public,
+# higher rate limit) or unauthenticated. Languages by code bytes when authenticated.
 def fetch_github(user):
     import urllib.request, json, collections
-    tok = os.environ.get("GITHUB_TOKEN")
+    pat = os.environ.get("GH_PAT")
+    tok = pat or os.environ.get("GITHUB_TOKEN")
     def api(path):
         h = {"User-Agent": "profile-card", "Accept": "application/vnd.github+json"}
         if tok:
             h["Authorization"] = "Bearer " + tok
-        with urllib.request.urlopen(urllib.request.Request("https://api.github.com" + path, headers=h), timeout=25) as r:
+        with urllib.request.urlopen(urllib.request.Request("https://api.github.com" + path, headers=h), timeout=30) as r:
             return json.load(r)
     try:
         prof = api(f"/users/{user}")
         repos = []
-        for pg in (1, 2, 3):
-            r = api(f"/users/{user}/repos?per_page=100&page={pg}&type=owner")
+        for pg in (1, 2, 3, 4):
+            if pat:   # authenticated as the user -> owned public + private repos
+                r = api(f"/user/repos?per_page=100&page={pg}&affiliation=owner&visibility=all")
+            else:
+                r = api(f"/users/{user}/repos?per_page=100&page={pg}&type=owner")
             repos += r
             if len(r) < 100:
                 break
         own = [x for x in repos if not x.get("fork")]
-        stars = sum(x.get("stargazers_count", 0) for x in repos)
-        forks = sum(x.get("forks_count", 0) for x in repos)
-        cnt = collections.Counter(x["language"] for x in own if x.get("language"))
-        tot = sum(cnt.values()) or 1
-        langs = [(l, round(c / tot * 100)) for l, c in cnt.most_common(5)]
+        stars = sum(x.get("stargazers_count", 0) for x in own)
+        forks = sum(x.get("forks_count", 0) for x in own)
+        # languages: by code bytes when authenticated (accurate, incl. private),
+        # else by primary-language repo count (1 request, no per-repo calls)
+        by = collections.Counter()
+        if tok:
+            for x in own:
+                try:
+                    for l, b in api(f"/repos/{x['full_name']}/languages").items():
+                        by[l] += b
+                except Exception:
+                    if x.get("language"):
+                        by[x["language"]] += 1
+        else:
+            for x in own:
+                if x.get("language"):
+                    by[x["language"]] += 1
+        tot = sum(by.values()) or 1
+        langs = [(l, round(b / tot * 100)) for l, b in by.most_common(5)]
+        repos_count = len(own) if pat else prof.get("public_repos")
         try:
             prs = api(f"/search/issues?q=author:{user}+type:pr&per_page=1").get("total_count")
             iss = api(f"/search/issues?q=author:{user}+type:issue&per_page=1").get("total_count")
         except Exception:
             prs = iss = None
         return dict(followers=prof.get("followers"), following=prof.get("following"),
-                    repos=prof.get("public_repos"), stars=stars, forks=forks,
-                    prs=prs, issues=iss, langs=langs)
+                    repos=repos_count, stars=stars, forks=forks, prs=prs, issues=iss,
+                    langs=langs, private=bool(pat))
     except Exception:
         return None
 
