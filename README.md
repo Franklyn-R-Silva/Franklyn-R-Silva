@@ -9,6 +9,6 @@
     <img alt="Franklyn Roberto — terminal profile card" src="https://raw.githubusercontent.com/Franklyn-R-Silva/Franklyn-R-Silva/main/dark.svg" width="100%">
   </picture>
 </a>
- 
+  
 
 
